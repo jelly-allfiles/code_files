@@ -1,0 +1,139 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.head{
+    padding-top: 50px;
+    margin-left: 20px;
+    color: rgb(248, 246, 246);
+ }
+ 
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    max-width: 100%;
+    background-color: rgb(180, 1, 1);
+    background-size: cover;
+ }
+ 
+ h1{
+     padding-top: 105px;
+     text-align: center;
+     font-size: 2rem;
+     color: rgb(245, 243, 243);
+     max-height: 100%;
+  }
+  nav{
+    position: fixed;
+    width: 100%;  
+    margin-top: 0;
+    background-color: rgb(0, 0, 134);
+    max-height: 100%;
+    overflow: hidden;
+   }
+ 
+ nav ul li a{
+     float: right;
+     text-decoration: none;
+     color:rgb(255, 255, 255);
+     margin-right: 90px;
+     margin-top: 35px;
+     margin-bottom: 35px;
+     font-size: 1.3em;
+     text-indent: -30px;
+     max-width: 100%;
+  }
+ 
+  nav ul li {
+    list-style: none;
+    max-width: 100%;
+ }
+ 
+ nav ul li a:hover{
+    color: rgb(8, 181, 224);
+    cursor: pointer;
+ 
+ }
+ .row2{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 20px;
+    max-width:100%;
+    height:auto;
+  }
+ 
+  .container1 img{
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+ 
+ .container1, .description-container{
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+ }
+  .description-container{
+       text-align: justify;
+       color: aliceblue;
+  }
+ 
+  @media (max-width: 768px){
+    .row2{
+       flex-direction: column;
+    }
+    .description-container{
+       text-align: center;
+    }
+  }
+ 
+  
+  .row3{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 20px;
+    flex-direction: row-reverse;
+  }
+ 
+  .container2 img{
+    max-width: 100%;
+    height: auto;
+  }
+ 
+ .container2, .description-container{
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+ }
+  .description-container{
+       text-align: justify;
+       float: left;
+       margin-left: 90px;
+       font-size: 1.5em;
+  }
+ 
+  @media (max-width: 768px){
+    .row3{
+       flex-direction: column;
+    }
+    .description-container{
+       text-align: center;
+    }
+  }
+
+footer{
+    max-height: 100%;
+   background-color: rgb(39, 73, 102);
+   margin-top: 30px;
+}
+ .f1{
+    font-size: 1.5rem;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding-top: 15.9px;
+ }
