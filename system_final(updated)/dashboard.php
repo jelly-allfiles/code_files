@@ -1,0 +1,466 @@
+<?php
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("Location: login.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href='https://fonts.googleapis.com/css?family=Outfit' rel='stylesheet'>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit';
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #F7F0E9;
+      height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+    }
+
+    .profile-container {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .profile-label {
+      cursor: pointer;
+    }
+
+    .profile-picture {
+      width: 65px;
+      height: 55px;
+      border-radius: 55%;
+      border: 2px solid #ddd;
+      object-fit: cover;
+      margin: 0 80px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .profile-picture:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-name {
+      font-size: 1.5em;
+      color: #333;
+      margin: 0;
+    }
+
+    h2 {
+    color: #81431E;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #81431E;
+    padding-bottom: 5px;
+}
+
+    .sidebar {
+      width: 250px;
+      height: 100%;
+      background: #D1AA8C;
+      color: #1f0e01;
+      padding-top: 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+      min-height: 100%;  
+    }
+
+    .sidebar .logo {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: #1f0e01;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .sidebar ul li a:hover {
+      background: #ddbea7;
+    }
+
+    .sidebar .close-menu {
+      display: none;
+    }
+
+    .sidebar ul a i {  
+            margin-right: 16px;  
+     }  
+
+    .dropdown-menu {
+      display: none;
+      padding-left: 20px;
+    }
+
+    .dropdown.open .dropdown-menu {
+      display: block;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      cursor: pointer;
+      background: #D1AA8C;
+      color: #1f0e01;
+      padding: 10px;
+      padding-bottom: 5px;
+      border-radius: 5px;
+    }
+
+    .notif, .notif1 {
+    position: absolute;  
+    top: 20px;      
+    background-color: #fff;
+    width: 50px;           /* Fixed width */
+    height: 50px;          /* Fixed height */
+    border-radius: 50%;    /* Perfect circle */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 24px;  
+    cursor: pointer; 
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif:hover, .notif1:hover {
+    transform: scale(1.1);  
+}
+
+.notif {
+    right: 20px;
+}
+
+.notif1 {
+    right: 80px; 
+}
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -250px;
+      }
+
+      .content {
+        padding-top: 90px;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .sidebar .close-menu {
+        text-align: right;
+        padding-right: 15px;
+        cursor: pointer;
+        display: block;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+    }
+
+    .content {
+      flex: 1;
+      padding: 15px;
+    }
+
+    .card__container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 340px));
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 50px;
+    }
+
+    .card__article {
+      position: relative;
+      background-color: rgba(221, 190, 167,0.2);
+      border: 2px solid #ccc;
+      overflow: hidden;
+      transition: background-color 0.6s;
+      border-radius: 10px;
+    }
+
+    .card__box-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+
+    .card__box {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    .card__box svg {
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    z-index: 2;
+}
+
+.card__title-overlay {
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translateX(-50%);
+  color: #1f0e01;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+  z-index: 2;
+  opacity: 1; /* Change to 0 if you want it hidden by default */
+  transition: opacity 0.3s ease-in-out;
+}
+    .card__button {
+  background-color: white;
+  padding: 0.75rem 1rem;
+  color: #000;
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 1; /* If you want it visible */
+  pointer-events: auto; /* Enable interaction */
+  transition: transform 0.4s, opacity 0.4s;
+  z-index: 3;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+
+    .card__button i {
+      font-size: 1.2rem;
+      transition: transform 0.4s;
+    }
+
+    @media screen and (max-width: 768px) {
+      .card__container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Dropdown Styles */
+.dropdown1 {
+    color: white;
+    position: relative; 
+    margin-bottom: 5px;
+}
+
+.dropdown-content {
+    background-color: white;
+    display: none; 
+    position: absolute; 
+    top: 30px;
+    margin-left: -100px;
+    min-width: 130px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1; 
+    border-radius: 5px; 
+}
+
+.dropdown1:hover .dropdown-content {
+    display: block; 
+}
+
+.dropdown-content a {
+    color: black; 
+    padding: 12px 16px; 
+    text-decoration: none; 
+    display: block; 
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1; 
+}
+  </style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="close-menu">
+    <svg onclick="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  </div>
+
+  <div class="profile-container">
+    <label for="profilePicInput" class="profile-label">
+      <img id="profilePic" src="photos/girl-profile.jpg" alt="Profile Picture" class="profile-picture">
+    </label>
+    <h2 class="user-name"><?php echo htmlspecialchars($_SESSION["firstname"] . " " . $_SESSION["lastname"]); ?></h2>
+    <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+  </div>
+
+  <ul>
+    <li><a href="dashboard.php"><i class="fas fa-qrcode"></i>Dashboard</a></li>
+    <li><a href="appointment.php"><i class="fas fa-calendar-week"></i>Booking</a></li>
+    <li><a href="calendar.php"><i class="fa-solid fa-calendar-days"></i>Calendar</a></li>
+
+    <li class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle"><i class="fa-solid fa-paw"></i>Pet</a>
+      <ul class="dropdown-menu">
+        <li><a href="petscategory.php">Pets Breed Category</a></li>
+        <li><a href="healthrecords.php">Health Records</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle"><i class="fa-solid fa-bag-shopping"></i>Order Pet Essentials</a>
+      <ul class="dropdown-menu">
+        <li><a href="order-pets.php">Pets Foods</a></li>
+        <li><a href="order-pets-accesories.php">Accessories</a></li>
+        <li><a href="order-pet-medicine.php">Medicine</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+    <a href="javascript:void(0)" class="dropdown-toggle"><i class="fa fa-heart"></i>Pet Safety Guidelines</a>
+      <ul class="dropdown-menu">
+        <li><a href="instructions.php">Instruction for Emergency</a></li>
+        <li><a href="guidelines.php">Emergency Guidelines</a></li>
+      </ul>
+    </li>
+
+    <li><a href="faq.php"><i class="far fa-question-circle"></i>FAQ</a></li>
+    <li><a href="logout.php" ><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
+  </ul>
+</div>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" onclick="toggleSidebar()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="4" x2="20" y1="12" y2="12"></line>
+    <line x1="4" x2="20" y1="6" y2="6"></line>
+    <line x1="4" x2="20" y1="18" y2="18"></line>
+  </svg>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+<div class="notif">
+    <i class="fa-solid fa-envelope" ></i>
+</div>
+<div class="notif1">
+    <i class="fa-solid fa-bell"></i>
+</div>
+  <div id="dashboard">
+    <div class="dashboard-container">
+      <header>
+        <h1 style="margin-top: 25px; color: #1f0e01;">Welcome, <?php echo htmlspecialchars($_SESSION["firstname"] . " " . $_SESSION["lastname"]); ?>!</h1>
+        <p style="margin-top: 10px; margin-bottom: 10px; color: #1f0e01;">What do you want to do today?</p>
+      </header>
+
+      <div class="card__container">
+        <article class="card__article">
+          <div class="card__box-wrapper">
+            <div class="card__box" >
+            <div class="card__gradient"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 48C0 21.5 21.5 0 48 0l0 48 0 393.4 130.1-92.9c8.3-6 19.6-6 27.9 0L336 441.4 336 48 48 48 48 0 336 0c26.5 0 48 21.5 48 48l0 440c0 9-5 17.2-13 21.3s-17.6 3.4-24.9-1.8L192 397.5 37.9 507.5c-7.3 5.2-16.9 5.9-24.9 1.8S0 497 0 488L0 48z"/></svg>
+            <h3 class="card__title-overlay">Book Appointment</h3>
+            </div>
+          </div>
+          <a href="appointment.php" class="card__button">
+            View Here <i class="fas fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="card__article">
+            <div class="card__image-wrapper">
+                <div class="card__box" >
+                <div class="card__gradient"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/></svg>
+                <h3 class="card__title-overlay">View Products</h3>
+                </div>
+          <a href="order-pets.php" class="card__button">
+            View Here <i class="fas fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="card__article">
+            <div class="card__image-wrapper">
+                <div class="card__box">
+                <div class="card__gradient"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464l349.5 0c-8.9-63.3-63.3-112-129-112l-91.4 0c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304l91.4 0C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7L29.7 512C13.3 512 0 498.7 0 482.3z"/></svg>
+                <h3 class="card__title-overlay">Update Profile</h3>
+                </div>
+          <a href="updated-pf.php" class="card__button">
+            View Here <i class="fas fa-arrow-right"></i>
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+  }
+
+  // Dropdown logic to allow only one open at a time
+  document.querySelectorAll(".dropdown-toggle").forEach(item => {
+    item.addEventListener("click", function () {
+      const parent = this.parentElement;
+
+      // Close other open dropdowns
+      document.querySelectorAll(".dropdown").forEach(drop => {
+        if (drop !== parent) {
+          drop.classList.remove("open");
+        }
+      });
+
+      // Toggle current one
+      parent.classList.toggle("open");
+    });
+  });
+</script>
+</body>
+</html>
